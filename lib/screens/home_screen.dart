@@ -31,22 +31,21 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final productProvider = Provider.of<ProductProvider>(context);
-    // Filter de producten op naam en categorie
-    final products = productProvider.products
-        .where((product) =>
-            product.name.toLowerCase().contains(searchQuery.toLowerCase()) ||
-            product.category.toLowerCase().contains(searchQuery.toLowerCase()))
-        .toList();
+    // Zoek op naam, categorie en barcode:
+    final products = productProvider.products.where((product) =>
+        product.name.toLowerCase().contains(searchQuery.toLowerCase()) ||
+        product.category.toLowerCase().contains(searchQuery.toLowerCase()) ||
+        (product.barcode?.toLowerCase().contains(searchQuery.toLowerCase()) ?? false)
+    ).toList();
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Histamine Helper'),
+        title: const Text('Histamine Tracker'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
-            // Zoekbalk
             TextField(
               decoration: InputDecoration(
                 labelText: 'Zoeken',
@@ -62,7 +61,6 @@ class _HomeScreenState extends State<HomeScreen> {
               },
             ),
             const SizedBox(height: 10),
-            // Lijst met producten (gefilterd)
             Expanded(
               child: products.isEmpty
                   ? const Center(child: Text('Geen producten gevonden'))
@@ -75,33 +73,24 @@ class _HomeScreenState extends State<HomeScreen> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          margin: const EdgeInsets.symmetric(
-                              vertical: 6, horizontal: 12),
+                          margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
                           child: ListTile(
-                            contentPadding: const EdgeInsets.symmetric(
-                                vertical: 8, horizontal: 16),
-                            title: Text(product.name,
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.w600)),
-                            subtitle: Text(product.category.isNotEmpty
-                                ? product.category
-                                : 'Geen categorie'),
+                            contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                            title: Text(product.name, style: const TextStyle(fontWeight: FontWeight.w600)),
+                            subtitle: Text(product.category.isNotEmpty ? product.category : 'Geen categorie'),
                             trailing: CircleAvatar(
-                              backgroundColor:
-                                  getSeverityColor(product.severity),
+                              backgroundColor: getSeverityColor(product.severity),
                               child: Text(
                                 product.severity.substring(0, 1).toUpperCase(),
                                 style: const TextStyle(color: Colors.white),
                               ),
                             ),
                             onTap: () {
-                              int indexInOriginal =
-                                  productProvider.products.indexOf(product);
+                              int indexInOriginal = productProvider.products.indexOf(product);
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) =>
-                                      ProductDetailScreen(productIndex: index),
+                                  builder: (context) => ProductDetailScreen(productIndex: indexInOriginal),
                                 ),
                               );
                             },
@@ -115,10 +104,8 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => const AddProductScreen()));
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => const AddProductScreen()));
         },
         child: const Icon(Icons.add),
       ),

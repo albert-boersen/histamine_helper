@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 import 'models/product.dart';
@@ -16,18 +15,20 @@ void main() async {
 
 class MyApp extends StatelessWidget {
   final Box<Product> productBox;
-  const MyApp({Key? key, required this.productBox}) : super(key: key);
+  MyApp({Key? key, Box<Product>? productBox})
+      : productBox = productBox ?? Hive.box<Product>('products'),
+        super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (_) => ProductProvider(productBox),
       child: MaterialApp(
-        title: 'Histamine Helper',
+        title: 'Histamine Tracker',
         theme: ThemeData(
           useMaterial3: true,
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
-          textTheme: GoogleFonts.latoTextTheme(Theme.of(context).textTheme),
+          textTheme: ThemeData.light().textTheme,
           scaffoldBackgroundColor: Colors.grey[100],
           appBarTheme: const AppBarTheme(
             centerTitle: true,

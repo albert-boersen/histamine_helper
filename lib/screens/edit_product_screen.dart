@@ -2,16 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/product_provider.dart';
 import '../models/product.dart';
+import 'barcode_scanner_screen.dart';
 
 class EditProductScreen extends StatefulWidget {
   final Product product;
   final int productIndex;
 
-  const EditProductScreen({
-    Key? key,
-    required this.product,
-    required this.productIndex,
-  }) : super(key: key);
+  const EditProductScreen({Key? key, required this.product, required this.productIndex}) : super(key: key);
 
   @override
   _EditProductScreenState createState() => _EditProductScreenState();
@@ -23,6 +20,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
   late String category;
   late String severity;
   late String notes;
+  late String barcode;
 
   @override
   void initState() {
@@ -31,6 +29,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
     category = widget.product.category;
     severity = widget.product.severity;
     notes = widget.product.notes;
+    barcode = widget.product.barcode ?? '';
   }
 
   @override
@@ -47,8 +46,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
               TextFormField(
                 initialValue: name,
                 decoration: const InputDecoration(labelText: 'Product Naam'),
-                validator: (value) =>
-                    value == null || value.isEmpty ? 'Vul een naam in' : null,
+                validator: (value) => value == null || value.isEmpty ? 'Vul een naam in' : null,
                 onSaved: (value) => name = value!,
               ),
               TextFormField(
@@ -79,6 +77,36 @@ class _EditProductScreenState extends State<EditProductScreen> {
                 maxLines: 3,
                 onSaved: (value) => notes = value ?? '',
               ),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                      decoration: const InputDecoration(
+                        labelText: 'Barcode (optioneel)',
+                      ),
+                      initialValue: barcode,
+                      onSaved: (value) => barcode = value ?? '',
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.camera_alt),
+                    onPressed: () async {
+                      final scannedBarcode = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const BarcodeScannerScreen(),
+                        ),
+                      );
+                      if (scannedBarcode != null) {
+                        setState(() {
+                          barcode = scannedBarcode;
+                        });
+                      }
+                    },
+                  ),
+                ],
+              ),
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
@@ -89,6 +117,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                       category: category,
                       severity: severity,
                       notes: notes,
+                      barcode: barcode.isNotEmpty ? barcode : null,
                     );
                     productProvider.updateProduct(widget.productIndex, updatedProduct);
                     Navigator.pop(context);

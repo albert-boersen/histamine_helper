@@ -11,15 +11,19 @@ class Product extends HiveObject {
   String category;
 
   @HiveField(2)
-  String severity; // waarden: 'groen', 'oranje', 'rood'
+  String severity; // bijv. 'groen', 'oranje', 'rood'
 
   @HiveField(3)
   String notes;
+
+  @HiveField(4)
+  String? barcode; // optioneel barcode-veld
 
   Product({
     required this.name,
     required this.category,
     required this.severity,
     this.notes = '',
+    this.barcode,
   });
 }

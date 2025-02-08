@@ -1,12 +1,11 @@
 // GENERATED CODE - HANDMADE ADAPTER
-// Zorg ervoor dat dit overeenkomt met de definitie in product.dart
 
 part of 'product.dart';
 
 class ProductAdapter extends TypeAdapter<Product> {
   @override
   final int typeId = 0;
-
+  
   @override
   Product read(BinaryReader reader) {
     final numOfFields = reader.readByte();
@@ -18,13 +17,14 @@ class ProductAdapter extends TypeAdapter<Product> {
       category: fields[1] as String,
       severity: fields[2] as String,
       notes: fields[3] as String,
+      barcode: fields[4] as String?,
     );
   }
-
+  
   @override
   void write(BinaryWriter writer, Product obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(5)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
@@ -32,6 +32,8 @@ class ProductAdapter extends TypeAdapter<Product> {
       ..writeByte(2)
       ..write(obj.severity)
       ..writeByte(3)
-      ..write(obj.notes);
+      ..write(obj.notes)
+      ..writeByte(4)
+      ..write(obj.barcode);
   }
 }

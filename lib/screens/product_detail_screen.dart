@@ -27,24 +27,20 @@ class ProductDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Gebruik Consumer zodat de widget opnieuw opbouwt wanneer de provider wijzigt.
     return Consumer<ProductProvider>(
       builder: (context, productProvider, child) {
-        // Controleer of de index nog geldig is
         if (productIndex >= productProvider.products.length) {
           return Scaffold(
             appBar: AppBar(title: const Text('Product niet gevonden')),
             body: const Center(child: Text('Dit product bestaat niet meer.')),
           );
         }
-        // Haal het meest recente product op uit de provider
         final Product product = productProvider.products[productIndex];
 
         return Scaffold(
           appBar: AppBar(
             title: Text(product.name),
             actions: [
-              // Edit-knop: Navigeer naar het bewerkscherm
               IconButton(
                 icon: const Icon(Icons.edit),
                 onPressed: () {
@@ -59,7 +55,6 @@ class ProductDetailScreen extends StatelessWidget {
                   );
                 },
               ),
-              // Delete-knop: Verwijder het product en keer terug
               IconButton(
                 icon: const Icon(Icons.delete),
                 onPressed: () {
@@ -74,13 +69,11 @@ class ProductDetailScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Toon de categorie (of 'Geen categorie' als leeg)
                 Text(
                   'Categorie: ${product.category.isNotEmpty ? product.category : 'Geen categorie'}',
                   style: const TextStyle(fontSize: 18),
                 ),
                 const SizedBox(height: 10),
-                // Toon de beoordeling met kleurindicatie
                 Row(
                   children: [
                     const Text('Beoordeling: ', style: TextStyle(fontSize: 18)),
@@ -98,10 +91,14 @@ class ProductDetailScreen extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 10),
-                // Toon de notities
                 const Text('Notities:', style: TextStyle(fontSize: 18)),
                 const SizedBox(height: 5),
                 Text(product.notes),
+                if (product.barcode != null && product.barcode!.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10),
+                    child: Text('Barcode: ${product.barcode}'),
+                  ),
               ],
             ),
           ),
