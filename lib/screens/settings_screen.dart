@@ -1,7 +1,7 @@
-// lib/screens/settings_screen.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/product_provider.dart';
+import 'donation_button.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({Key? key}) : super(key: key);
@@ -49,6 +49,8 @@ class SettingsScreen extends StatelessWidget {
               title: const Text("Wis alle gegevens"),
               onTap: () => _clearAllData(context),
             ),
+            const Divider(),
+            const DonationButton(),  // Hier voeg je de donatieknop toe.
           ],
         ),
       ),
