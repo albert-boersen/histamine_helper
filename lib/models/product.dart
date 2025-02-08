@@ -8,20 +8,20 @@ class Product extends HiveObject {
   String name;
 
   @HiveField(1)
-  String category;
+  String category; // Niet nullable, standaard lege string
 
   @HiveField(2)
-  String severity; // bijv. 'groen', 'oranje', 'rood'
+  String severity;
 
   @HiveField(3)
-  String notes;
+  String notes; // Niet nullable, standaard lege string
 
   @HiveField(4)
-  String? barcode; // optioneel barcode-veld
+  String? barcode; // Barcode kan nullable blijven
 
   Product({
     required this.name,
-    required this.category,
+    this.category = '',
     required this.severity,
     this.notes = '',
     this.barcode,

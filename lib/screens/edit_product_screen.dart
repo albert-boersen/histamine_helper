@@ -26,9 +26,10 @@ class _EditProductScreenState extends State<EditProductScreen> {
   void initState() {
     super.initState();
     name = widget.product.name;
-    category = widget.product.category;
+    // Als de waarden null zijn, gebruiken we een lege string
+    category = widget.product.category ?? '';
     severity = widget.product.severity;
-    notes = widget.product.notes;
+    notes = widget.product.notes ?? '';
     barcode = widget.product.barcode ?? '';
   }
 
@@ -55,7 +56,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   labelText: 'Categorie (optioneel)',
                   hintText: 'Laat leeg als niet van toepassing',
                 ),
-                onSaved: (value) => category = value ?? '',
+                onSaved: (value) => category = value?.trim() ?? '',
               ),
               DropdownButtonFormField<String>(
                 decoration: const InputDecoration(labelText: 'Beoordeling'),
@@ -73,20 +74,20 @@ class _EditProductScreenState extends State<EditProductScreen> {
               ),
               TextFormField(
                 initialValue: notes,
-                decoration: const InputDecoration(labelText: 'Notities'),
+                decoration: const InputDecoration(labelText: 'Notities (optioneel)'),
                 maxLines: 3,
-                onSaved: (value) => notes = value ?? '',
+                onSaved: (value) => notes = value?.trim() ?? '',
               ),
               const SizedBox(height: 10),
               Row(
                 children: [
                   Expanded(
                     child: TextFormField(
+                      initialValue: barcode,
                       decoration: const InputDecoration(
                         labelText: 'Barcode (optioneel)',
                       ),
-                      initialValue: barcode,
-                      onSaved: (value) => barcode = value ?? '',
+                      onSaved: (value) => barcode = value?.trim() ?? '',
                     ),
                   ),
                   IconButton(

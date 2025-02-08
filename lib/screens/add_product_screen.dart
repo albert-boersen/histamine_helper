@@ -1,3 +1,4 @@
+// lib/screens/add_product_screen.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/product_provider.dart';
@@ -14,10 +15,16 @@ class AddProductScreen extends StatefulWidget {
 class _AddProductScreenState extends State<AddProductScreen> {
   final _formKey = GlobalKey<FormState>();
   String name = '';
-  String category = '';
+  String? category; // kan null zijn tijdens invoer
   String severity = 'groen';
-  String notes = '';
-  String barcode = '';
+  String? notes; // kan null zijn tijdens invoer
+  final TextEditingController _barcodeController = TextEditingController();
+
+  @override
+  void dispose() {
+    _barcodeController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +48,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                   labelText: 'Categorie (optioneel)',
                   hintText: 'Laat leeg als niet van toepassing',
                 ),
-                onSaved: (value) => category = value ?? '',
+                onSaved: (value) => category = value?.trim(),
               ),
               DropdownButtonFormField<String>(
                 decoration: const InputDecoration(labelText: 'Beoordeling'),
@@ -58,25 +65,25 @@ class _AddProductScreenState extends State<AddProductScreen> {
                 },
               ),
               TextFormField(
-                decoration: const InputDecoration(labelText: 'Notities'),
+                decoration: const InputDecoration(labelText: 'Notities (optioneel)'),
                 maxLines: 3,
-                onSaved: (value) => notes = value ?? '',
+                onSaved: (value) => notes = value?.trim(),
               ),
               const SizedBox(height: 10),
               Row(
                 children: [
                   Expanded(
                     child: TextFormField(
+                      controller: _barcodeController,
                       decoration: const InputDecoration(
                         labelText: 'Barcode (optioneel)',
                       ),
-                      initialValue: barcode,
-                      onSaved: (value) => barcode = value ?? '',
                     ),
                   ),
                   IconButton(
                     icon: const Icon(Icons.camera_alt),
                     onPressed: () async {
+                      // Open de BarcodeScannerScreen en wacht op het resultaat
                       final scannedBarcode = await Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -85,7 +92,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                       );
                       if (scannedBarcode != null) {
                         setState(() {
-                          barcode = scannedBarcode;
+                          _barcodeController.text = scannedBarcode;
                         });
                       }
                     },
@@ -97,12 +104,13 @@ class _AddProductScreenState extends State<AddProductScreen> {
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
                     _formKey.currentState!.save();
+                    // Gebruik '??' om null te vervangen door lege string
                     Product newProduct = Product(
                       name: name,
-                      category: category,
+                      category: category ?? '',
                       severity: severity,
-                      notes: notes,
-                      barcode: barcode.isNotEmpty ? barcode : null,
+                      notes: notes ?? '',
+                      barcode: _barcodeController.text.isNotEmpty ? _barcodeController.text : null,
                     );
                     productProvider.addProduct(newProduct);
                     Navigator.pop(context);

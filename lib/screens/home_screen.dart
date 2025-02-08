@@ -1,4 +1,3 @@
-// lib/screens/home_screen.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/product_provider.dart';
@@ -10,13 +9,14 @@ import '../models/product.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
-
+  
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
   String searchQuery = '';
+  final TextEditingController _searchController = TextEditingController();
 
   Color getSeverityColor(String severity) {
     switch (severity.toLowerCase()) {
@@ -32,13 +32,31 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    // Zorg dat de controller initieel leeg is.
+    _searchController.text = searchQuery;
+    _searchController.addListener(() {
+      setState(() {
+        searchQuery = _searchController.text;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final productProvider = Provider.of<ProductProvider>(context);
-    // Filter op naam, categorie en barcode
+    // Zorg dat eventuele null-waarden als lege string worden behandeld.
     final products = productProvider.products.where((product) =>
         product.name.toLowerCase().contains(searchQuery.toLowerCase()) ||
-        product.category.toLowerCase().contains(searchQuery.toLowerCase()) ||
-        (product.barcode?.toLowerCase().contains(searchQuery.toLowerCase()) ?? false)
+        (product.category ?? '').toLowerCase().contains(searchQuery.toLowerCase()) ||
+        (product.barcode ?? '').toLowerCase().contains(searchQuery.toLowerCase())
     ).toList();
 
     return Scaffold(
@@ -60,23 +78,30 @@ class _HomeScreenState extends State<HomeScreen> {
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
-            // Zoekbalk met barcode-scan knop
+            // Zoekbalk met barcode-scan knop en clear-knop
             Row(
               children: [
                 Expanded(
                   child: TextField(
+                    controller: _searchController,
                     decoration: InputDecoration(
                       labelText: 'Zoeken',
                       prefixIcon: const Icon(Icons.search),
+                      suffixIcon: _searchController.text.isNotEmpty
+                          ? IconButton(
+                              icon: const Icon(Icons.clear),
+                              onPressed: () {
+                                _searchController.clear();
+                                setState(() {
+                                  searchQuery = '';
+                                });
+                              },
+                            )
+                          : null,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    onChanged: (value) {
-                      setState(() {
-                        searchQuery = value;
-                      });
-                    },
                   ),
                 ),
                 IconButton(
@@ -89,8 +114,10 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     );
                     if (scannedBarcode != null) {
+                      // Zet de gescande barcode zowel in de variabele als in de controller.
                       setState(() {
                         searchQuery = scannedBarcode;
+                        _searchController.text = scannedBarcode;
                       });
                     }
                   },
@@ -113,8 +140,13 @@ class _HomeScreenState extends State<HomeScreen> {
                           margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
                           child: ListTile(
                             contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                            title: Text(product.name, style: const TextStyle(fontWeight: FontWeight.w600)),
-                            subtitle: Text(product.category.isNotEmpty ? product.category : 'Geen categorie'),
+                            title: Text(
+                              product.name,
+                              style: const TextStyle(fontWeight: FontWeight.w600),
+                            ),
+                            subtitle: Text(
+                              ((product.category ?? '').isNotEmpty ? product.category! : 'Geen categorie'),
+                            ),
                             trailing: CircleAvatar(
                               backgroundColor: getSeverityColor(product.severity),
                               child: Text(

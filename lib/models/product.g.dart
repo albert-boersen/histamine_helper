@@ -1,4 +1,5 @@
 // GENERATED CODE - HANDMADE ADAPTER
+// Zorg dat deze code overeenkomt met de bovenstaande definitie
 
 part of 'product.dart';
 

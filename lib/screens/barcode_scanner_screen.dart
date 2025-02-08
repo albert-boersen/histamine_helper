@@ -11,22 +11,24 @@ class BarcodeScannerScreen extends StatefulWidget {
 
 class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
   String? scannedBarcode;
+  bool _hasReturned = false; // Zorgt ervoor dat Navigator.pop maar 1 keer wordt aangeroepen.
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Scan Barcode')),
+      appBar: AppBar(
+        title: const Text('Scan Barcode'),
+      ),
       body: Column(
         children: [
           Expanded(
             child: MobileScanner(
               onDetect: (BarcodeCapture barcodeCapture) {
                 final List<Barcode> barcodes = barcodeCapture.barcodes;
-                if (barcodes.isNotEmpty) {
-                  setState(() {
-                    scannedBarcode = barcodes.first.rawValue;
-                  });
-                  // Keer direct terug met de gescande barcode.
+                if (barcodes.isNotEmpty && !_hasReturned) {
+                  scannedBarcode = barcodes.first.rawValue;
+                  _hasReturned = true;
+                  // Geef de gescande barcode direct terug aan de vorige pagina.
                   Navigator.pop(context, scannedBarcode);
                 }
               },

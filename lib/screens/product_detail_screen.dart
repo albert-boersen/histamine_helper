@@ -70,7 +70,7 @@ class ProductDetailScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Categorie: ${product.category.isNotEmpty ? product.category : 'Geen categorie'}',
+                  'Categorie: ${((product.category ?? '').isNotEmpty ? product.category! : 'Geen categorie')}',
                   style: const TextStyle(fontSize: 18),
                 ),
                 const SizedBox(height: 10),
@@ -93,8 +93,8 @@ class ProductDetailScreen extends StatelessWidget {
                 const SizedBox(height: 10),
                 const Text('Notities:', style: TextStyle(fontSize: 18)),
                 const SizedBox(height: 5),
-                Text(product.notes),
-                if (product.barcode != null && product.barcode!.isNotEmpty)
+                Text(product.notes ?? ''),
+                if (product.barcode != null && (product.barcode ?? '').isNotEmpty)
                   Padding(
                     padding: const EdgeInsets.only(top: 10),
                     child: Text('Barcode: ${product.barcode}'),
