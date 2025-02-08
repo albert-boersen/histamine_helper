@@ -1,3 +1,4 @@
+// lib/providers/product_provider.dart
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import '../models/product.dart';
@@ -29,6 +30,11 @@ class ProductProvider extends ChangeNotifier {
 
   Future<void> deleteProduct(int index) async {
     await productBox.deleteAt(index);
+    loadProducts();
+  }
+
+  Future<void> clearAllProducts() async {
+    await productBox.clear();
     loadProducts();
   }
 }

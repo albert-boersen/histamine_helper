@@ -1,8 +1,11 @@
+// lib/screens/home_screen.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/product_provider.dart';
 import 'add_product_screen.dart';
 import 'product_detail_screen.dart';
+import 'settings_screen.dart';
+import 'barcode_scanner_screen.dart';
 import '../models/product.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -31,7 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final productProvider = Provider.of<ProductProvider>(context);
-    // Zoek op naam, categorie en barcode:
+    // Filter op naam, categorie en barcode
     final products = productProvider.products.where((product) =>
         product.name.toLowerCase().contains(searchQuery.toLowerCase()) ||
         product.category.toLowerCase().contains(searchQuery.toLowerCase()) ||
@@ -41,24 +44,58 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Histamine Tracker'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const SettingsScreen()),
+              );
+            },
+          )
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
-            TextField(
-              decoration: InputDecoration(
-                labelText: 'Zoeken',
-                prefixIcon: const Icon(Icons.search),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
+            // Zoekbalk met barcode-scan knop
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    decoration: InputDecoration(
+                      labelText: 'Zoeken',
+                      prefixIcon: const Icon(Icons.search),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    onChanged: (value) {
+                      setState(() {
+                        searchQuery = value;
+                      });
+                    },
+                  ),
                 ),
-              ),
-              onChanged: (value) {
-                setState(() {
-                  searchQuery = value;
-                });
-              },
+                IconButton(
+                  icon: const Icon(Icons.camera_alt),
+                  onPressed: () async {
+                    final scannedBarcode = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const BarcodeScannerScreen(),
+                      ),
+                    );
+                    if (scannedBarcode != null) {
+                      setState(() {
+                        searchQuery = scannedBarcode;
+                      });
+                    }
+                  },
+                ),
+              ],
             ),
             const SizedBox(height: 10),
             Expanded(

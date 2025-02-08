@@ -1,3 +1,4 @@
+// lib/screens/barcode_scanner_screen.dart
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
@@ -25,7 +26,7 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
                   setState(() {
                     scannedBarcode = barcodes.first.rawValue;
                   });
-                  // Zodra een barcode is gevonden, keer direct terug met het resultaat.
+                  // Keer direct terug met de gescande barcode.
                   Navigator.pop(context, scannedBarcode);
                 }
               },
